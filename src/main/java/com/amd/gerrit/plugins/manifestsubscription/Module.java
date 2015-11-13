@@ -14,11 +14,22 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
+import com.google.gerrit.extensions.events.GitReferenceUpdatedListener;
+import com.google.gerrit.extensions.events.LifecycleListener;
+import com.google.gerrit.extensions.registration.DynamicSet;
 import com.google.inject.AbstractModule;
+import com.google.inject.Scopes;
 
 class Module extends AbstractModule {
+
   @Override
   protected void configure() {
-    // TODO
+
+    bind(ManifestSubscription.class).in(Scopes.SINGLETON);
+
+    DynamicSet.bind(binder(), LifecycleListener.class)
+        .to(ManifestSubscription.class);
+    DynamicSet.bind(binder(), GitReferenceUpdatedListener.class)
+        .to(ManifestSubscription.class);
   }
 }
