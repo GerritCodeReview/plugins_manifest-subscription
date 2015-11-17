@@ -46,6 +46,30 @@
       "revId": "117e7bd8a49ee91bae6dc5ac9f4b867ddc02f688",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "3b93d719_3dfb0fa3",
+        "filename": "src/main/resources/Documentation/about.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1011123
+      },
+      "writtenOn": "2015-11-17T14:35:32Z",
+      "side": 1,
+      "message": "OK, now I see that in the pom.xml you\u0027re using API version 2.9.1.",
+      "parentUuid": "1ba29363_fc05a956",
+      "range": {
+        "startLine": 5,
+        "startChar": 63,
+        "endLine": 5,
+        "endChar": 78
+      },
+      "revId": "117e7bd8a49ee91bae6dc5ac9f4b867ddc02f688",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
