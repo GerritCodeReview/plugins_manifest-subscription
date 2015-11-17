@@ -22,6 +22,30 @@
       "revId": "117e7bd8a49ee91bae6dc5ac9f4b867ddc02f688",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "1ba29363_fc05a956",
+        "filename": "src/main/resources/Documentation/about.md",
+        "patchSetId": 2
+      },
+      "lineNbr": 5,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2015-11-17T11:05:03Z",
+      "side": 1,
+      "message": "Unfortunately it is because our instance is still at that version.  We are not running a fork, it\u0027s just that I still have to find time to do a test upgrade and then actually upgrade our install.\n\nI am not aware of anything in this plug in that is version specific *except* the jgit junit test dependency (I pegged it to the version that\u0027s the same as that used in the particular Gerrit version.)",
+      "parentUuid": "3b93d719_7df197c2",
+      "range": {
+        "startLine": 5,
+        "startChar": 63,
+        "endLine": 5,
+        "endChar": 78
+      },
+      "revId": "117e7bd8a49ee91bae6dc5ac9f4b867ddc02f688",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
