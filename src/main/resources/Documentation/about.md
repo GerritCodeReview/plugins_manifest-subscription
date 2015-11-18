@@ -46,8 +46,8 @@ CanonicalManifest resolve <include> and <remove-project>
 * TODO: keep parsed manifest in memory for quick lookup
 * TODO: monitor all manifest branch if no branch is specified
 * TODO: ssh command to check what is being monitored
-* TODO: stright mode, only monitor projects using default (no remote)
-* TODO: split mode (store all manifests in same branch strcuture as source instead of flattening the underlying file strcuture)
+* TODO: strict mode, only monitor projects using default (no remote)
+* TODO: split mode (store all manifests in same branch structure as source instead of flattening the underlying file strcuture)
 * TODO: not monitor non-local projects
 
 * TODO: make sure no circular dependencies (project with manifest subscription is not in the
@@ -57,7 +57,7 @@ manifest being monitored.)
 * resolve relative path in include
 * supports include tag in manifest
 
-* TODO: check project.config on newkly created project
+* TODO: check project.config on newly created project
 
 * TODO: include an external manifest DTD or XML schema/XSD
 * generates/xjc classes from DTD/XSD at build time
