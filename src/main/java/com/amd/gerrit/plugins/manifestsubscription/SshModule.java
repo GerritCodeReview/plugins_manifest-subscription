@@ -19,6 +19,6 @@ import com.google.gerrit.sshd.PluginCommandModule;
 class SshModule extends PluginCommandModule {
   @Override
   protected void configureCommands() {
-    // command("my-command").to(MyCommand.class);
+    command(ShowSubscription.class);
   }
 }
