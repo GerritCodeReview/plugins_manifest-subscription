@@ -20,6 +20,15 @@ public class ProjectBranchKey {
   private String project;
   private String branch;
 
+  public String getBranch() {
+    return branch;
+  }
+
+  public String getProject() {
+    return project;
+  }
+
+
   public ProjectBranchKey(String project, String branch) {
     this.project = project;
     this.branch = branch;
