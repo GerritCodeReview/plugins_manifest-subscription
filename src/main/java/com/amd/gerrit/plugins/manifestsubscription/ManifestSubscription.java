@@ -15,10 +15,7 @@
 package com.amd.gerrit.plugins.manifestsubscription;
 
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
-import com.google.common.collect.HashBasedTable;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Sets;
-import com.google.common.collect.Table;
+import com.google.common.collect.*;
 import com.google.gerrit.extensions.annotations.PluginName;
 import com.google.gerrit.extensions.events.GitReferenceUpdatedListener;
 import com.google.gerrit.extensions.events.LifecycleListener;
@@ -65,6 +62,14 @@ public class ManifestSubscription implements
    * subscribed project name and branch, manifest dest store, manifest dest branch
    **/
   private Table<ProjectBranchKey, String, Set<String>> subscribedRepos;
+
+  public Set<String> getEnabledManifestRepos() {
+    return ImmutableSet.copyOf(enabledManifestRepos.keySet());
+  }
+
+  public Set<ProjectBranchKey> getSubscribedProjects() {
+    return ImmutableSet.copyOf(subscribedRepos.rowKeySet());
+  }
 
   @Override
   public void start() {
