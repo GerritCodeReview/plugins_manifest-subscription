@@ -21,7 +21,7 @@ limitations under the License.
   <groupId>com.amd.gerrit.plugins.manifestsubscription</groupId>
   <artifactId>manifestsubscription</artifactId>
   <packaging>jar</packaging>
-  <version>2.9.1</version>
+  <version>${gitdescribe}</version>
   <name>manifestSubscription</name>
 
   <properties>
@@ -67,6 +67,29 @@ limitations under the License.
           <target>1.7</target>
           <encoding>UTF-8</encoding>
         </configuration>
+      </plugin>
+
+      <!-- Use git-describe for version -->
+      <plugin>
+        <groupId>com.lukegb.mojo</groupId>
+        <artifactId>gitdescribe-maven-plugin</artifactId>
+        <version>3.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>gitdescribe</goal>
+            </goals>
+            <id>git-describe</id>
+            <phase>initialize</phase>
+            <configuration>
+              <descriptionProperty>gitdescribe</descriptionProperty>
+              <extraArguments>
+                <param>--dirty</param>
+                <param>--tags</param>
+              </extraArguments>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
 
       <!-- create uber jar-->
