@@ -28,6 +28,8 @@ import com.google.inject.Inject;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -147,6 +149,24 @@ public class ManifestSubscription implements
 
           Manifest manifest = manifestStores.get(store, storeBranch);
           String manifestSrc = manifestSource.get(store, storeBranch);
+          StringBuilder extraCommitMsg = new StringBuilder();
+
+          try {
+            Project.NameKey p = new Project.NameKey(projectName);
+            Repository r = gitRepoManager.openRepository(p);
+            RevWalk walk = new RevWalk(r);
+            RevCommit c = walk.parseCommit(
+                ObjectId.fromString(event.getNewObjectId()));
+
+            extraCommitMsg.append(projectName);
+            extraCommitMsg.append(" ");
+            extraCommitMsg.append(event.getNewObjectId().substring(0,7));
+            extraCommitMsg.append(" ");
+            extraCommitMsg.append(c.getShortMessage());
+          } catch (IOException e) {
+            e.printStackTrace();
+          }
+
           // these are project from the above manifest previously
           // cached in the lookup table
           for (com.amd.gerrit.plugins.manifestsubscription.manifest.Project
@@ -156,7 +176,7 @@ public class ManifestSubscription implements
 
           try {
             updateManifest(store, STORE_BRANCH_PREFIX + storeBranch,
-                           manifest, manifestSrc);
+                           manifest, manifestSrc, extraCommitMsg.toString());
           } catch (JAXBException | IOException e) {
             e.printStackTrace();
           }
@@ -426,6 +446,13 @@ public class ManifestSubscription implements
   private void updateManifest(String projectName, String refName,
                               Manifest manifest, String manifestSrc)
       throws JAXBException, IOException {
+    updateManifest(projectName, refName, manifest, manifestSrc, "");
+  }
+
+  private void updateManifest(String projectName, String refName,
+                              Manifest manifest, String manifestSrc,
+                              String extraCommitMsg)
+      throws JAXBException, IOException {
     Project.NameKey p = new Project.NameKey(projectName);
     MetaDataUpdate update = metaDataUpdateFactory.create(p);
     VersionedManifests vManifests = new VersionedManifests(refName);
@@ -443,6 +470,7 @@ public class ManifestSubscription implements
       entry.put("default.xml", manifest);
       vManifests.setManifests(entry);
       vManifests.setSrcManifestRepo(manifestSrc);
+      vManifests.setExtraCommitMsg(extraCommitMsg);
       vManifests.commit(update);
     } else {
       vManifests = new VersionedManifests("master");

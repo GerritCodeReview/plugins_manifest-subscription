@@ -47,6 +47,15 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
   private Marshaller manifestMarshaller;
   private Map<String, Manifest> manifests;
   private String srcManifestRepo = "";
+  private String extraCommitMsg = "";
+
+  public String getExtraCommitMsg() {
+    return extraCommitMsg;
+  }
+
+  public void setExtraCommitMsg(String extraCommitMsg) {
+    this.extraCommitMsg = extraCommitMsg;
+  }
 
   public String getSrcManifestRepo() {
     return srcManifestRepo;
@@ -140,6 +149,10 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
     StringBuilder commitMsg = new StringBuilder();
     commitMsg.append("Snapshot manifest from " +
         srcManifestRepo + " updated\n\n");
+
+    if (extraCommitMsg != null && extraCommitMsg.length() > 0) {
+      commitMsg.append(extraCommitMsg);
+    }
 
     String path;
     Manifest manifest;
