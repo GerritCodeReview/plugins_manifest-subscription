@@ -223,13 +223,25 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
       defaultRef = manifest.getDefault().getRevision();
     }
 
-    affixManifest(gitRepoManager, manifest.getProject(), defaultRef, lookup);
+    ManifestOp op = new ManifestOp() {
+      @Override
+      public boolean apply(com.amd.gerrit.plugins.manifestsubscription.manifest.Project project,
+                           String hash, String name,
+                           GitRepositoryManager gitRepoManager) {
+        project.setRevision(hash);
+        project.setUpstream(name);
+        return true;
+      }
+    };
+
+    traverseManifestAndApplyOp(gitRepoManager, manifest.getProject(), defaultRef, op, lookup);
   }
 
-  private static void affixManifest(GitRepositoryManager gitRepoManager,
-                                    List<com.amd.gerrit.plugins.manifestsubscription.manifest.Project> projects,
-                                    String defaultRef,
-                                    Table<String, String, String> lookup) {
+  private static void traverseManifestAndApplyOp(GitRepositoryManager gitRepoManager,
+                                                 List<com.amd.gerrit.plugins.manifestsubscription.manifest.Project> projects,
+                                                 String defaultRef,
+                                                 ManifestOp op,
+                                                 Table<String, String, String> lookup) {
 
     String ref;
     String hash;
@@ -258,13 +270,12 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
 
         if (hash != null) {
           lookup.put(projectName, ref, hash);
-          project.setRevision(hash);
-          project.setUpstream(ref);
+          op.apply(project, hash, ref, gitRepoManager);
         }
       }
 
       if (project.getProject().size() > 0) {
-        affixManifest(gitRepoManager, project.getProject(), defaultRef, lookup);
+        traverseManifestAndApplyOp(gitRepoManager, project.getProject(), defaultRef, op, lookup);
       }
     }
   }
