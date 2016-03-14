@@ -55,6 +55,7 @@ xjc -dtd -d gen -p com.amd.gerrit.plugins.manifestsubscription.manifest manifest
 Manifest represent raw XML
 CanonicalManifest resolve <include> and <remove-project>
 
+* TODO: possibly separate out manifest op into a separate plugin and make VesionedManifest as a libary (manifest-base or something)
 * TODO: generate snapshot manifest for all commit (Currently only generated on a per push/ref-updated basis)
   * Make it configurable, possibly per project, using plugin config or via special tag in manifest
 * TODO: monitor all manifest branch if no branch is specified

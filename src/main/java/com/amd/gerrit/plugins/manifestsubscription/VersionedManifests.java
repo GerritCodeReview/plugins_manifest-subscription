@@ -21,6 +21,11 @@ import com.google.common.collect.Table;
 import com.google.gerrit.reviewdb.client.Project;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.VersionedMetaData;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.api.errors.InvalidRefNameException;
+import org.eclipse.jgit.api.errors.RefAlreadyExistsException;
+import org.eclipse.jgit.api.errors.RefNotFoundException;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.CommitBuilder;
 import org.eclipse.jgit.lib.PersonIdent;
@@ -202,6 +207,40 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
     saveFile(path, output.toByteArray());
   }
 
+  static void branchManifest(GitRepositoryManager gitRepoManager,
+                             Manifest manifest,
+                             final String branch)
+                                          throws GitAPIException, IOException {
+    Table<String, String, String> lookup = HashBasedTable.create();
+    String defaultRef = null;
+
+    if (manifest.getDefault() != null) {
+      defaultRef = manifest.getDefault().getRevision();
+    }
+
+    ManifestOp op = new ManifestOp() {
+      @Override
+      public boolean apply(com.amd.gerrit.plugins.manifestsubscription.manifest.Project project,
+                           String hash, String name,
+                           GitRepositoryManager gitRepoManager) throws
+                                RefAlreadyExistsException,
+                                InvalidRefNameException, RefNotFoundException,
+                                GitAPIException, IOException {
+        Project.NameKey p = new Project.NameKey(project.getName());
+        Repository db = gitRepoManager.openRepository(p);
+        Git git = new Git(db);
+
+        git.branchCreate().setName(branch).setStartPoint(hash).call();
+
+        git.close();
+        //db.close(); //closed by git.close()
+        return true;
+      }
+    };
+
+    traverseManifestAndApplyOp(gitRepoManager, manifest.getProject(), defaultRef, op, lookup);
+  }
+
   /**
    * Pass in a {@link com.google.common.collect.Table} if you want to reuse
    * the lookup cache
@@ -211,7 +250,9 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
    * @param lookup
    */
   static void affixManifest(GitRepositoryManager gitRepoManager,
-                            Manifest manifest, Table<String, String, String> lookup) {
+                            Manifest manifest,
+                            Table<String, String, String> lookup)
+                                          throws GitAPIException, IOException {
     if (lookup == null) {
       // project, branch, hash
       lookup = HashBasedTable.create();
@@ -223,13 +264,26 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
       defaultRef = manifest.getDefault().getRevision();
     }
 
-    affixManifest(gitRepoManager, manifest.getProject(), defaultRef, lookup);
+    ManifestOp op = new ManifestOp() {
+      @Override
+      public boolean apply(com.amd.gerrit.plugins.manifestsubscription.manifest.Project project,
+                           String hash, String name,
+                           GitRepositoryManager gitRepoManager) {
+        project.setRevision(hash);
+        project.setUpstream(name);
+        return true;
+      }
+    };
+
+    traverseManifestAndApplyOp(gitRepoManager, manifest.getProject(), defaultRef, op, lookup);
   }
 
-  private static void affixManifest(GitRepositoryManager gitRepoManager,
-                                    List<com.amd.gerrit.plugins.manifestsubscription.manifest.Project> projects,
-                                    String defaultRef,
-                                    Table<String, String, String> lookup) {
+  private static void traverseManifestAndApplyOp(
+      GitRepositoryManager gitRepoManager,
+      List<com.amd.gerrit.plugins.manifestsubscription.manifest.Project> projects,
+      String defaultRef,
+      ManifestOp op,
+      Table<String, String, String> lookup) {
 
     String ref;
     String hash;
@@ -258,13 +312,12 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
 
         if (hash != null) {
           lookup.put(projectName, ref, hash);
-          project.setRevision(hash);
-          project.setUpstream(ref);
+          op.apply(project, hash, ref, gitRepoManager);
         }
       }
 
       if (project.getProject().size() > 0) {
-        affixManifest(gitRepoManager, project.getProject(), defaultRef, lookup);
+        traverseManifestAndApplyOp(gitRepoManager, project.getProject(), defaultRef, op, lookup);
       }
     }
   }
