@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "7c08f263_f0ca4065",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestOp.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-03-16T23:09:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fca1425f_fc5b6957",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 4
+      },
+      "revId": "2fa4548d1c6726e6dda99c07c8b6f4eaa28fc50c",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fca1425f_dc5ead4a",
         "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
         "patchSetId": 1
@@ -36,6 +60,24 @@
       "writtenOn": "2016-03-16T22:39:08Z",
       "side": 1,
       "message": "Line too long, the style like:\n\nprivate static void traverseManifestAndApplyOp(\n    GitRepositoryManager gitRepoManager,\n    List\u003ccom.amd.gerrit.plugins.manifestsubscription.manifest.Project\u003e projects\n...\nwill probably be better.",
+      "revId": "2fa4548d1c6726e6dda99c07c8b6f4eaa28fc50c",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5c0b2e61_2f94695e",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-03-16T23:09:16Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fca1425f_dc5ead4a",
       "revId": "2fa4548d1c6726e6dda99c07c8b6f4eaa28fc50c",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
