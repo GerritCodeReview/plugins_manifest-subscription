@@ -25,6 +25,30 @@
     },
     {
       "key": {
+        "uuid": "5c0b2e61_4fa3adca",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/BranchManifest.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 97,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-03-16T23:13:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c08f263_10c26454",
+      "range": {
+        "startLine": 87,
+        "startChar": 6,
+        "endLine": 97,
+        "endChar": 5
+      },
+      "revId": "68291c7b3563a2723a8cdf479d163f6d9a6c9cb4",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "fca1425f_bc55e125",
         "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestOp.java",
         "patchSetId": 2
@@ -48,6 +72,30 @@
     },
     {
       "key": {
+        "uuid": "7c08f263_10eb84cc",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestOp.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 13,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-03-16T23:13:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "fca1425f_bc55e125",
+      "range": {
+        "startLine": 13,
+        "startChar": 0,
+        "endLine": 13,
+        "endChar": 4
+      },
+      "revId": "68291c7b3563a2723a8cdf479d163f6d9a6c9cb4",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
         "uuid": "7c08f263_70b770fe",
         "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestSubscription.java",
         "patchSetId": 2
@@ -59,6 +107,30 @@
       "writtenOn": "2016-03-16T22:45:03Z",
       "side": 1,
       "message": "This could be a multi-catch.",
+      "range": {
+        "startLine": 284,
+        "startChar": 0,
+        "endLine": 288,
+        "endChar": 11
+      },
+      "revId": "68291c7b3563a2723a8cdf479d163f6d9a6c9cb4",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "7c08f263_30e68806",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestSubscription.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 288,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-03-16T23:13:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "7c08f263_70b770fe",
       "range": {
         "startLine": 284,
         "startChar": 0,
