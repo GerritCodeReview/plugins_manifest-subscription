@@ -1,0 +1,44 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "fca1425f_fc5b6957",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestOp.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 7,
+      "author": {
+        "id": 1012758
+      },
+      "writtenOn": "2016-03-16T22:39:08Z",
+      "side": 1,
+      "message": "Indent 2 spaces, not 4",
+      "range": {
+        "startLine": 7,
+        "startChar": 0,
+        "endLine": 7,
+        "endChar": 4
+      },
+      "revId": "2fa4548d1c6726e6dda99c07c8b6f4eaa28fc50c",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "fca1425f_dc5ead4a",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 241,
+      "author": {
+        "id": 1012758
+      },
+      "writtenOn": "2016-03-16T22:39:08Z",
+      "side": 1,
+      "message": "Line too long, the style like:\n\nprivate static void traverseManifestAndApplyOp(\n    GitRepositoryManager gitRepoManager,\n    List\u003ccom.amd.gerrit.plugins.manifestsubscription.manifest.Project\u003e projects\n...\nwill probably be better.",
+      "revId": "2fa4548d1c6726e6dda99c07c8b6f4eaa28fc50c",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    }
+  ]
+}
