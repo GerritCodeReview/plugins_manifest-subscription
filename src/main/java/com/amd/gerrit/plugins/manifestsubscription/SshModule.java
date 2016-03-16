@@ -20,5 +20,6 @@ class SshModule extends PluginCommandModule {
   @Override
   protected void configureCommands() {
     command(ShowSubscription.class);
+    command(BranchManifest.class);
   }
 }
