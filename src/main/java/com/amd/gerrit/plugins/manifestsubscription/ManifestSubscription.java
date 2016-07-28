@@ -341,7 +341,6 @@ public class ManifestSubscription implements
             Maps.<String, Set<com.amd.gerrit.plugins.manifestsubscription.manifest.Project>>newHashMap());
       }
 
-
       Map<String,
           Set<com.amd.gerrit.plugins.manifestsubscription.manifest.Project>> ps;
       ps = subscribedRepos.get(pbKey, store);
@@ -443,9 +442,11 @@ public class ManifestSubscription implements
   private VersionedManifests parseManifests(Project.NameKey p, String refName)
       throws IOException, JAXBException, ConfigInvalidException {
 
+    Repository repo = gitRepoManager.openRepository(p);
+    ObjectId commitId = repo.resolve(refName);
     MetaDataUpdate update = metaDataUpdateFactory.create(p);
     VersionedManifests vManifests = new VersionedManifests(refName);
-    vManifests.load(update);
+    vManifests.load(update, commitId);
 
     return vManifests;
   }
@@ -461,13 +462,15 @@ public class ManifestSubscription implements
                               String extraCommitMsg)
       throws JAXBException, IOException {
     Project.NameKey p = new Project.NameKey(projectName);
+    Repository repo = gitRepoManager.openRepository(p);
     MetaDataUpdate update = metaDataUpdateFactory.create(p);
+    ObjectId commitId = repo.resolve(refName);
     VersionedManifests vManifests = new VersionedManifests(refName);
 
     //TODO find a better way to detect no branch
     boolean refExists = true;
     try {
-      vManifests.load(update);
+      vManifests.load(update, commitId);
     } catch (Exception e) {
       refExists = false;
     }
