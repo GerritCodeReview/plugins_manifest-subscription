@@ -142,7 +142,7 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
       }
     }
 
-    treewalk.release();
+    treewalk.close();
 
     //TODO load changed manifest
 //    DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);

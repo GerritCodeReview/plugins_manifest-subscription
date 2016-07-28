@@ -26,14 +26,14 @@ limitations under the License.
 
   <properties>
     <Gerrit-ApiType>plugin</Gerrit-ApiType>
-    <Gerrit-ApiVersion>2.9.1</Gerrit-ApiVersion>
+    <Gerrit-ApiVersion>2.12.3</Gerrit-ApiVersion>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <jaxb2-basics-runtime.version>0.6.4</jaxb2-basics-runtime.version>
     <jacoco.version>0.7.5.201505241946</jacoco.version>
     <gitdescribe-maven-plugin.version>3.0</gitdescribe-maven-plugin.version>
     <maven-jaxb2-plugin.version>0.7.0</maven-jaxb2-plugin.version>
     <truth.version>0.27</truth.version>
-    <jgit.junit.version>3.7.1.201504261725-r</jgit.junit.version>
+    <jgit.junit.version>4.1.1.201511131810-r</jgit.junit.version>
   </properties>
 
   <build>
