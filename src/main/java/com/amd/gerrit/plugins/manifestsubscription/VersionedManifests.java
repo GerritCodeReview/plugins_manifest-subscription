@@ -114,35 +114,33 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
     String path;
     Manifest manifest;
 
-    RevWalk rw = new RevWalk(reader);
-
-    // This happens when someone configured a invalid branch name
-    if (getRevision() == null) {
-      throw new ConfigInvalidException(refName);
-    }
-    RevCommit r = rw.parseCommit(getRevision());
-    TreeWalk treewalk = new TreeWalk(reader);
-    treewalk.addTree(r.getTree());
-    treewalk.setRecursive(false);
-    treewalk.setFilter(PathSuffixFilter.create(".xml"));
-    while (treewalk.next()) {
-      if (treewalk.isSubtree()) {
-        treewalk.enterSubtree();
-      } else {
-        path = treewalk.getPathString();
-        try {
-          //TODO: Should this be done more lazily?
-          //TODO: difficult to do when reader is not available outside of onLoad?
-          ByteArrayInputStream input = new ByteArrayInputStream(readFile(path));
-          manifest = (Manifest) manifestUnmarshaller.unmarshal(input);
-          manifests.put(path, manifest);
-        } catch (JAXBException e) {
-          e.printStackTrace();
+    try (RevWalk rw = new RevWalk(reader);
+         TreeWalk treewalk = new TreeWalk(reader)) {
+      // This happens when someone configured a invalid branch name
+      if (getRevision() == null) {
+        throw new ConfigInvalidException(refName);
+      }
+      RevCommit r = rw.parseCommit(getRevision());
+      treewalk.addTree(r.getTree());
+      treewalk.setRecursive(false);
+      treewalk.setFilter(PathSuffixFilter.create(".xml"));
+      while (treewalk.next()) {
+        if (treewalk.isSubtree()) {
+          treewalk.enterSubtree();
+        } else {
+          path = treewalk.getPathString();
+          try {
+            //TODO: Should this be done more lazily?
+            //TODO: difficult to do when reader is not available outside of onLoad?
+            ByteArrayInputStream input = new ByteArrayInputStream(readFile(path));
+            manifest = (Manifest) manifestUnmarshaller.unmarshal(input);
+            manifests.put(path, manifest);
+          } catch (JAXBException e) {
+            e.printStackTrace();
+          }
         }
       }
     }
-
-    treewalk.release();
 
     //TODO load changed manifest
 //    DiffFormatter df = new DiffFormatter(DisabledOutputStream.INSTANCE);
@@ -226,14 +224,12 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
                            GitRepositoryManager gitRepoManager) throws
           GitAPIException, IOException {
         Project.NameKey p = new Project.NameKey(project.getName());
-        Repository db = gitRepoManager.openRepository(p);
-        Git git = new Git(db);
-
-        RevWalk walk = new RevWalk(db);
-        RevCommit commit = walk.parseCommit(db.resolve(hash));
-        git.tag().setName(tag).setObjectId(commit).setAnnotated(true).call();
-
-        git.close();
+        try (Repository db = gitRepoManager.openRepository(p);
+             Git git = new Git(db);
+             RevWalk walk = new RevWalk(db)) {
+          RevCommit commit = walk.parseCommit(db.resolve(hash));
+          git.tag().setName(tag).setObjectId(commit).setAnnotated(true).call();
+        }
         return true;
       }
     };
@@ -259,13 +255,10 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
                            GitRepositoryManager gitRepoManager) throws
           GitAPIException, IOException {
         Project.NameKey p = new Project.NameKey(project.getName());
-        Repository db = gitRepoManager.openRepository(p);
-        Git git = new Git(db);
-
-        git.branchCreate().setName(branch).setStartPoint(hash).call();
-
-        git.close();
-        //db.close(); //closed by git.close()
+        try (Repository db = gitRepoManager.openRepository(p);
+             Git git = new Git(db)) {
+          git.branchCreate().setName(branch).setStartPoint(hash).call();
+        }
         return true;
       }
     };
@@ -336,11 +329,8 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
 
         if (hash == null) {
           p = new Project.NameKey(projectName);
-          try {
-            Repository db = gitRepoManager.openRepository(p);
-
+          try (Repository db = gitRepoManager.openRepository(p)) {
             hash = db.resolve(ref).getName();
-            db.close();
           } catch (IOException e) {
             e.printStackTrace();
           }
