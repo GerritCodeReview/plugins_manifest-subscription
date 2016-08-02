@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "7412e248_bae3d1cd",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1011123
+      },
+      "writtenOn": "2016-08-02T05:43:09Z",
+      "side": 1,
+      "message": "It would be better to open the TreeWalk in a try-with-resource otherwise it doesn\u0027t get closed if any exception occurs.\n\nAlso, the RevWalk at line 117 should be in a try-with-resource otherwise it never gets closed.",
+      "range": {
+        "startLine": 145,
+        "startChar": 4,
+        "endLine": 145,
+        "endChar": 21
+      },
+      "revId": "58d6542793f2ee31c6e46af49eeeaf4efdffd81d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    }
+  ]
+}
