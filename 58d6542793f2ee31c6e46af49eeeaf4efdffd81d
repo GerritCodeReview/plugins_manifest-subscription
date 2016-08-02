@@ -22,6 +22,30 @@
       "revId": "58d6542793f2ee31c6e46af49eeeaf4efdffd81d",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "8f41fd2d_2b631918",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 145,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-08-02T18:07:10Z",
+      "side": 1,
+      "message": "Done.  Thanks for the pointers, I always appreciate them.",
+      "parentUuid": "7412e248_bae3d1cd",
+      "range": {
+        "startLine": 145,
+        "startChar": 4,
+        "endLine": 145,
+        "endChar": 21
+      },
+      "revId": "58d6542793f2ee31c6e46af49eeeaf4efdffd81d",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
