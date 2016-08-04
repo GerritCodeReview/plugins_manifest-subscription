@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "f41df21b_16c01c26",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1011123
+      },
+      "writtenOn": "2016-08-04T08:16:22Z",
+      "side": 1,
+      "message": "Is this auto-closeable?  If so it can also be opened in try-with-resource.",
+      "range": {
+        "startLine": 135,
+        "startChar": 12,
+        "endLine": 135,
+        "endChar": 32
+      },
+      "revId": "40ea12642107b93bb676c6debe83a37431456981",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    }
+  ]
+}
