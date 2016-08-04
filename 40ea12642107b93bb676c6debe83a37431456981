@@ -22,6 +22,30 @@
       "revId": "40ea12642107b93bb676c6debe83a37431456981",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "5415debd_692d05fc",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 3
+      },
+      "lineNbr": 135,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-08-04T16:11:34Z",
+      "side": 1,
+      "message": "InputStream implements Closeable, which can be use with try-with-resource also.  Good catch.",
+      "parentUuid": "f41df21b_16c01c26",
+      "range": {
+        "startLine": 135,
+        "startChar": 12,
+        "endLine": 135,
+        "endChar": 32
+      },
+      "revId": "40ea12642107b93bb676c6debe83a37431456981",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
