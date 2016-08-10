@@ -14,6 +14,7 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
+import com.google.gerrit.common.ChangeHooks;
 import com.google.gerrit.extensions.annotations.Export;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
@@ -37,6 +38,9 @@ public class BranchManifestServlet extends HttpServlet {
   @Inject
   private MetaDataUpdate.Server metaDataUpdateFactory;
 
+  @Inject
+  private ChangeHooks changeHooks;
+
   protected void doPost(HttpServletRequest req, HttpServletResponse res)
                                                             throws IOException {
 
@@ -49,6 +53,7 @@ public class BranchManifestServlet extends HttpServlet {
       String newManifestRepo = null;
       String newManifestBranch= null;
       String newManifestPath = null;
+      boolean createSnapShotBranch = false;
 
       if (input.containsKey("new-manifest-repo")) {
         newManifestRepo = input.get("new-manifest-repo")[0];
@@ -56,16 +61,21 @@ public class BranchManifestServlet extends HttpServlet {
         newManifestPath = input.get("new-manifest-path")[0];
       }
 
-      Utilities.branchManifest(gitRepoManager,
-                                metaDataUpdateFactory,
-                                input.get("manifest-repo")[0],
-                                input.get("manifest-commit-ish")[0],
-                                input.get("manifest-path")[0],
-                                input.get("new-branch")[0],
-                                newManifestRepo,
-                                newManifestBranch,
-                                newManifestPath,
-                                res.getWriter(), null, true);
+      if (input.containsKey("create-snapshot-branch")) {
+        createSnapShotBranch =
+            Boolean.parseBoolean(input.get("create-snapshot-branch")[0]);
+      }
+
+      Utilities.branchManifest(
+          gitRepoManager, metaDataUpdateFactory, changeHooks,
+          input.get("manifest-repo")[0],
+          input.get("manifest-commit-ish")[0],
+          input.get("manifest-path")[0],
+          input.get("new-branch")[0],
+          newManifestRepo,
+          newManifestBranch,
+          newManifestPath,
+          createSnapShotBranch, res.getWriter(), null, true);
 
     } else {
       res.setStatus(HttpServletResponse.SC_BAD_REQUEST);
