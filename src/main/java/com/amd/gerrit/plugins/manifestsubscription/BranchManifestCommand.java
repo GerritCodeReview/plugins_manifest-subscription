@@ -14,6 +14,7 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
+import com.google.gerrit.common.ChangeHooks;
 import com.google.gerrit.common.data.GlobalCapability;
 import com.google.gerrit.extensions.annotations.RequiresCapability;
 import com.google.gerrit.server.git.GitRepositoryManager;
@@ -33,6 +34,9 @@ public class BranchManifestCommand extends SshCommand {
 
   @Inject
   private MetaDataUpdate.Server metaDataUpdateFactory;
+
+  @Inject
+  private ChangeHooks changeHooks;
 
   @Option(name = "-r", aliases = {"--manifest-repo"},
           usage = "", required = true)
@@ -69,6 +73,11 @@ public class BranchManifestCommand extends SshCommand {
       usage = "", required = false)
   private String newManifestPath;
 
+  @Option(name = "-cs", aliases = {"--create-snapshot-branch"},
+      depends = {"-nb", "-nr", "-np"},
+      usage = "", required = false)
+  private boolean createSnapShotBranch;
+
   @Override
   protected void run() {
     stdout.println("Branching manifest:");
@@ -79,10 +88,13 @@ public class BranchManifestCommand extends SshCommand {
     stdout.println(newManifestRepo);
     stdout.println(newManifestBranch);
     stdout.println(newManifestPath);
+    stdout.println("Create snapshot branch: " + createSnapShotBranch);
 
-    Utilities.branchManifest(gitRepoManager, metaDataUpdateFactory,
-        manifestRepo, manifestCommitish, manifestPath, newBranch,
+    Utilities.branchManifest(gitRepoManager, metaDataUpdateFactory, changeHooks,
+        manifestRepo, manifestCommitish, manifestPath,
+        newBranch,
         newManifestRepo, newManifestBranch, newManifestPath,
+        createSnapShotBranch,
         stdout, stderr,
         outputType==Utilities.OutputType.JSON);
 
