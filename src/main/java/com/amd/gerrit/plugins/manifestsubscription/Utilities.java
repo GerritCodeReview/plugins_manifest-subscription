@@ -14,8 +14,11 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
+import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
+import com.google.gerrit.common.ChangeHooks;
+import com.google.gerrit.reviewdb.client.Branch;
 import com.google.gerrit.reviewdb.client.Project;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
@@ -26,11 +29,13 @@ import com.google.gson.GsonBuilder;
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Default;
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
 
+import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
+import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,6 +79,67 @@ public class Utilities {
     return false;
   }
 
+  static ObjectId updateManifest(GitRepositoryManager gitRepoManager,
+                             MetaDataUpdate.Server metaDataUpdateFactory,
+                             ChangeHooks changeHooks,
+                             String projectName, String refName,
+                             Manifest manifest, String manifestSrc,
+                             String extraCommitMsg,
+                             String defaultBranchBase)
+      throws JAXBException, IOException {
+    Project.NameKey p = new Project.NameKey(projectName);
+    Repository repo = gitRepoManager.openRepository(p);
+    MetaDataUpdate update = metaDataUpdateFactory.create(p);
+    ObjectId commitId = repo.resolve(refName);
+    VersionedManifests vManifests = new VersionedManifests(refName);
+
+    //TODO find a better way to detect no branch
+    boolean refExists = true;
+    try {
+      vManifests.load(update, commitId);
+    } catch (Exception e) {
+      refExists = false;
+    }
+
+    RevCommit commit = null;
+    if (refExists) {
+      Map<String, Manifest> entry = Maps.newHashMapWithExpectedSize(1);
+      entry.put("default.xml", manifest);
+      vManifests.setManifests(entry);
+      vManifests.setSrcManifestRepo(manifestSrc);
+      vManifests.setExtraCommitMsg(extraCommitMsg);
+      commit = vManifests.commit(update);
+    } else {
+      if (defaultBranchBase == null) defaultBranchBase = "refs/heads/master";
+      vManifests = new VersionedManifests(defaultBranchBase);
+      ObjectId cid = repo.resolve(defaultBranchBase);
+      try {
+        vManifests.load(update, cid);
+      } catch (ConfigInvalidException e) {
+        e.printStackTrace();
+      }
+      Map<String, Manifest> entry = Maps.newHashMapWithExpectedSize(1);
+      entry.put("default.xml", manifest);
+      vManifests.setManifests(entry);
+      commit = vManifests.commitToNewRef(update, refName);
+    }
+
+    // TODO this may be bug in the MetaDataUpdate or VersionedMetaData
+    // May be related:
+    // https://code.google.com/p/gerrit/issues/detail?id=2564
+    // https://gerrit-review.googlesource.com/55540
+    if (commit != null) {
+      changeHooks.doRefUpdatedHook(new Branch.NameKey(p, refName),
+                                    commit.getParent(0).getId(),
+                                    commit.getId(), null);
+      return commit.getId();
+    } else {
+      log.warn("Failing to commit manifest subscription update");
+    }
+
+    return null;
+  }
+
   public enum OutputType {
     TEXT,
     JSON
@@ -95,14 +161,15 @@ public class Utilities {
     return manifests.getCanonicalManifest(manifestPath);
   }
 
-  static Manifest createNewManifestFromBase
-                                    (GitRepositoryManager gitRepoManager,
-                                     MetaDataUpdate.Server metaDataUpdateFactory,
-                                     String manifestRepo,
-                                     String manifestBranch,
-                                     String manifestPath,
-                                     String newRef,
-                                     Manifest base)
+  static Manifest createNewManifestFromBase(
+      GitRepositoryManager gitRepoManager,
+       MetaDataUpdate.Server metaDataUpdateFactory,
+       ChangeHooks changeHooks,
+       String srcManifestRepo, String srcManifestCommitish,
+       String manifestRepo, String manifestBranch, String manifestPath,
+       String newRef,
+       boolean createSnapShotBranch,
+       Manifest base)
       throws JAXBException, IOException, ConfigInvalidException, GitAPIException {
 
     // Replace default ref with newly created branch or tag
@@ -140,6 +207,24 @@ public class Utilities {
     }
 
     manifest.getDefault().setRevision(newRef);
+
+    if (createSnapShotBranch) {
+      // Create the snapshot branch and tag it
+      // branch name is by convention for the new manifest to be created below
+      ObjectId oid = Utilities.updateManifest(
+          gitRepoManager, metaDataUpdateFactory, changeHooks,
+          srcManifestRepo,
+          ManifestSubscription.STORE_BRANCH_PREFIX + manifestBranch + "/" + manifestPath,
+          manifest, manifestRepo, "Manifest branched", srcManifestCommitish);
+
+//      try (Repository db = gitRepoManager.openRepository(new Project.NameKey(srcManifestRepo));
+//           Git git = new Git(db);
+//           RevWalk walk = new RevWalk(db)) {
+//        RevCommit commit = walk.parseCommit(oid);
+//        git.tag().setName(createSnapShotBranch)
+//            .setObjectId(commit).setAnnotated(true).call();
+//      }
+    }
 
     Project.NameKey p = new Project.NameKey(manifestRepo);
     Repository repo = gitRepoManager.openRepository(p);
@@ -218,11 +303,13 @@ public class Utilities {
 
   static void branchManifest(GitRepositoryManager gitRepoManager,
                              MetaDataUpdate.Server metaDataUpdateFactory,
+                             ChangeHooks changeHooks,
                              String manifestRepo, String manifestCommitish,
                              String manifestPath, String newBranch,
                              String newManifestRepo,
                              String newManifestBranch,
                              String newManifestPath,
+                             boolean createSnapShotBranch,
                              Writer output, PrintWriter error, boolean inJSON) {
 
     Manifest manifest;
@@ -234,9 +321,11 @@ public class Utilities {
       if (newManifestBranch != null &&
           newManifestPath != null &&
           newManifestRepo != null) {
-        createNewManifestFromBase(gitRepoManager, metaDataUpdateFactory,
+        createNewManifestFromBase(
+            gitRepoManager, metaDataUpdateFactory, changeHooks,
+            manifestRepo, manifestCommitish,
             newManifestRepo, newManifestBranch, newManifestPath,
-            newBranch, manifest);
+            newBranch, createSnapShotBranch, manifest);
       }
 
     } catch (IOException | ConfigInvalidException | ManifestReadException |
