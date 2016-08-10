@@ -20,7 +20,6 @@ import com.google.gerrit.common.ChangeHooks;
 import com.google.gerrit.extensions.annotations.PluginName;
 import com.google.gerrit.extensions.events.GitReferenceUpdatedListener;
 import com.google.gerrit.extensions.events.LifecycleListener;
-import com.google.gerrit.reviewdb.client.Branch;
 import com.google.gerrit.reviewdb.client.Project;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
@@ -48,7 +47,7 @@ public class ManifestSubscription implements
   private static final String KEY_BRANCH = "branch";
   private static final String KEY_STORE = "store";
 
-  private static final String STORE_BRANCH_PREFIX = "refs/heads/m/";
+  static final String STORE_BRANCH_PREFIX = "refs/heads/m/";
 
   private final String pluginName;
 
@@ -182,8 +181,9 @@ public class ManifestSubscription implements
           }
 
           try {
-            updateManifest(store, STORE_BRANCH_PREFIX + storeBranch,
-                           manifest, manifestSrc, extraCommitMsg.toString());
+            Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory,
+                changeHooks, store, STORE_BRANCH_PREFIX + storeBranch,
+                manifest, manifestSrc, extraCommitMsg.toString(), null);
           } catch (JAXBException | IOException e) {
             e.printStackTrace();
           }
@@ -454,61 +454,8 @@ public class ManifestSubscription implements
   private void updateManifest(String projectName, String refName,
                               Manifest manifest, String manifestSrc)
       throws JAXBException, IOException {
-    updateManifest(projectName, refName, manifest, manifestSrc, "");
-  }
-
-  private void updateManifest(String projectName, String refName,
-                              Manifest manifest, String manifestSrc,
-                              String extraCommitMsg)
-      throws JAXBException, IOException {
-    Project.NameKey p = new Project.NameKey(projectName);
-    Repository repo = gitRepoManager.openRepository(p);
-    MetaDataUpdate update = metaDataUpdateFactory.create(p);
-    ObjectId commitId = repo.resolve(refName);
-    VersionedManifests vManifests = new VersionedManifests(refName);
-
-    //TODO find a better way to detect no branch
-    boolean refExists = true;
-    try {
-      vManifests.load(update, commitId);
-    } catch (Exception e) {
-      refExists = false;
-    }
-
-
-    RevCommit commit = null;
-    if (refExists) {
-      Map<String, Manifest> entry = Maps.newHashMapWithExpectedSize(1);
-      entry.put("default.xml", manifest);
-      vManifests.setManifests(entry);
-      vManifests.setSrcManifestRepo(manifestSrc);
-      vManifests.setExtraCommitMsg(extraCommitMsg);
-      commit = vManifests.commit(update);
-    } else {
-      vManifests = new VersionedManifests("master");
-      try {
-        vManifests.load(update);
-      } catch (ConfigInvalidException e) {
-        e.printStackTrace();
-      }
-      Map<String, Manifest> entry = Maps.newHashMapWithExpectedSize(1);
-      entry.put("default.xml", manifest);
-      vManifests.setManifests(entry);
-      commit = vManifests.commitToNewRef(update, refName);
-    }
-
-    // TODO this may be bug in the MetaDataUpdate or VersionedMetaData
-    // May be related:
-    // https://code.google.com/p/gerrit/issues/detail?id=2564
-    // https://gerrit-review.googlesource.com/55540
-    if (commit != null) {
-      changeHooks.doRefUpdatedHook(new Branch.NameKey(p, refName),
-                                    commit.getParent(0).getId(),
-                                    commit.getId(), null);
-    } else {
-      log.warn("Failing to commit manifest subscription update");
-    }
-
+    Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory, changeHooks,
+        projectName, refName, manifest, manifestSrc, "", null);
   }
 
 }
