@@ -135,6 +135,8 @@ public class Utilities {
       return commit.getId();
     } else {
       log.warn("Failing to commit manifest subscription update");
+      log.warn("Project: " + projectName);
+      log.warn("Ref: " + refName);
     }
 
     return null;
