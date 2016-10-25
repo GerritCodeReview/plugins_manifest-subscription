@@ -22,6 +22,30 @@
       "revId": "919a0f2286afef1d24ea401a49422c8286751565",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "014b349d_7c1459b7",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/Utilities.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-10-25T18:36:35Z",
+      "side": 1,
+      "message": "Done",
+      "parentUuid": "c1ff5c6a_b2d8c008",
+      "range": {
+        "startLine": 137,
+        "startChar": 6,
+        "endLine": 139,
+        "endChar": 34
+      },
+      "revId": "919a0f2286afef1d24ea401a49422c8286751565",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
