@@ -14,6 +14,8 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
+import static com.google.gerrit.reviewdb.client.RefNames.REFS_CONFIG;
+
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
 import com.google.common.collect.*;
 import com.google.gerrit.common.ChangeHooks;
@@ -132,7 +134,11 @@ public class ManifestSubscription implements
         refName.substring(11) : "";
     ProjectBranchKey pbKey = new ProjectBranchKey(projectName, branchName);
 
-    if ("refs/meta/config".equals(refName)) {
+    if (event.getNewObjectId().equals(ObjectId.zeroId().toString())) {
+      // This happens when there's a branch deletion and possibly other events
+      log.info("Project: " + projectName +
+               "\nrefName: " + refName);
+    } else if (REFS_CONFIG.equals(refName)) {
       // possible change in enabled repos
       processProjectConfigChange(event);
     } else if (enabledManifestSource.containsKey(projectName) &&
