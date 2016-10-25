@@ -1,0 +1,27 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "c1ff5c6a_b2d8c008",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/Utilities.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1011123
+      },
+      "writtenOn": "2016-10-25T13:49:28Z",
+      "side": 1,
+      "message": "It would be better to do this in a single log statement, so that it all appears on the same line in the output.  With multiple statements it\u0027s possible that other log output can appear between.",
+      "range": {
+        "startLine": 137,
+        "startChar": 6,
+        "endLine": 139,
+        "endChar": 34
+      },
+      "revId": "919a0f2286afef1d24ea401a49422c8286751565",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    }
+  ]
+}
