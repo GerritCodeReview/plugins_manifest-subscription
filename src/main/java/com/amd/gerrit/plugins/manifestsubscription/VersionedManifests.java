@@ -17,6 +17,8 @@ package com.amd.gerrit.plugins.manifestsubscription;
 import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
+import com.google.gerrit.common.ChangeHooks;
+import com.google.gerrit.reviewdb.client.Branch;
 import com.google.gerrit.reviewdb.client.Project;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.VersionedMetaData;
@@ -29,6 +31,7 @@ import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.CommitBuilder;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
@@ -248,7 +251,8 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
 
   static void branchManifest(GitRepositoryManager gitRepoManager,
                              Manifest manifest,
-                             final String branch)
+                             final String branch,
+                             final ChangeHooks changeHooks)
                                           throws GitAPIException, IOException {
     Table<String, String, String> lookup = HashBasedTable.create();
     String defaultRef = null;
@@ -266,7 +270,16 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
         Project.NameKey p = new Project.NameKey(project.getName());
         try (Repository db = gitRepoManager.openRepository(p);
              Git git = new Git(db)) {
-          git.branchCreate().setName(branch).setStartPoint(hash).call();
+          try {
+            Ref r = git.branchCreate().setName(branch).setStartPoint(hash).call();
+            changeHooks.doRefUpdatedHook(new Branch.NameKey(p, branch),
+                ObjectId.zeroId(),
+                r.getObjectId(), null);
+            log.info(r.toString());
+            log.info(r.getObjectId().toString());
+          } catch (Exception e) {
+
+          }
         }
         return true;
       }

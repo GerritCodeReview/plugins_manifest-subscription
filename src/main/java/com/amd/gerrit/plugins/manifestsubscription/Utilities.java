@@ -14,7 +14,6 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
-import com.google.common.base.Strings;
 import com.google.common.base.Throwables;
 import com.google.common.collect.Maps;
 import com.google.gerrit.common.ChangeHooks;
@@ -29,13 +28,11 @@ import com.google.gson.GsonBuilder;
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Default;
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
 
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
-import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -128,9 +125,14 @@ public class Utilities {
     // May be related:
     // https://code.google.com/p/gerrit/issues/detail?id=2564
     // https://gerrit-review.googlesource.com/55540
-    if (commit != null && commit.getParents().length > 0) {
+    if (commit != null) {
+      ObjectId parent = ObjectId.zeroId();
+
+      if (commit.getParents().length > 0) {
+        parent = commit.getParent(0).getId();
+      }
       changeHooks.doRefUpdatedHook(new Branch.NameKey(p, refName),
-                                    commit.getParent(0).getId(),
+                                    parent,
                                     commit.getId(), null);
       return commit.getId();
     } else {
@@ -323,7 +325,8 @@ public class Utilities {
     try {
       manifest = getManifest(gitRepoManager, manifestRepo,
                               manifestCommitish, manifestPath);
-      VersionedManifests.branchManifest(gitRepoManager, manifest, newBranch);
+      VersionedManifests.branchManifest(gitRepoManager, manifest,
+                                        newBranch, changeHooks);
 
       if (newManifestBranch != null &&
           newManifestPath != null &&
