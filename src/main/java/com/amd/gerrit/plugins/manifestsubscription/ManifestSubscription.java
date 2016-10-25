@@ -132,7 +132,12 @@ public class ManifestSubscription implements
         refName.substring(11) : "";
     ProjectBranchKey pbKey = new ProjectBranchKey(projectName, branchName);
 
-    if ("refs/meta/config".equals(refName)) {
+    if (event.getNewObjectId().equals(ObjectId.zeroId().toString())) {
+      // This happens when there's a branch deletion and possibly other events
+      log.info("Project: " + projectName +
+               "\nrefName: " + refName +
+               "\nnewObjectId: " + event.getNewObjectId());
+    } else if ("refs/meta/config".equals(refName)) {
       // possible change in enabled repos
       processProjectConfigChange(event);
     } else if (enabledManifestSource.containsKey(projectName) &&
