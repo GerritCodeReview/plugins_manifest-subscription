@@ -22,6 +22,30 @@
       "revId": "0d442de9b1dba986f620d63d8e52b85d82659581",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "c1e11c42_02c60a35",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/VersionedManifests.java",
+        "patchSetId": 2
+      },
+      "lineNbr": 20,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2016-10-26T17:10:47Z",
+      "side": 1,
+      "message": "We are only up to 2.12.3 currently.  That\u0027s something we should keep in mind in our next upgrade, thanks.  I am guessing things like the Replication plug-in now uses the Hook plugin?",
+      "parentUuid": "4191accd_5e8c9517",
+      "range": {
+        "startLine": 20,
+        "startChar": 32,
+        "endLine": 20,
+        "endChar": 43
+      },
+      "revId": "0d442de9b1dba986f620d63d8e52b85d82659581",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
