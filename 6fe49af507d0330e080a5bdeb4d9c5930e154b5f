@@ -1,0 +1,50 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "e1be2036_638c4218",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestSubscription.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 139,
+      "author": {
+        "id": 1011123
+      },
+      "writtenOn": "2016-10-26T00:55:24Z",
+      "side": 1,
+      "message": "Is it useful to log this if it\u0027s always going to be zero?",
+      "range": {
+        "startLine": 139,
+        "startChar": 35,
+        "endLine": 139,
+        "endChar": 57
+      },
+      "revId": "6fe49af507d0330e080a5bdeb4d9c5930e154b5f",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "4191accd_7e895106",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestSubscription.java",
+        "patchSetId": 1
+      },
+      "lineNbr": 140,
+      "author": {
+        "id": 1011123
+      },
+      "writtenOn": "2016-10-26T00:55:24Z",
+      "side": 1,
+      "message": "note that there is REFS_CONFIG constant.",
+      "range": {
+        "startLine": 140,
+        "startChar": 15,
+        "endLine": 140,
+        "endChar": 33
+      },
+      "revId": "6fe49af507d0330e080a5bdeb4d9c5930e154b5f",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    }
+  ]
+}
