@@ -161,6 +161,12 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
 
   @Override
   protected boolean onSave(CommitBuilder commit) throws IOException {
+    // extra commit message (such as the one-liner git log) is put in
+    // the body because:
+    // 1) not all manifest update has a one-line git log (such as
+    //    the manifest generated from the initial subscription)
+    // 2) An manifest update may contain multiple project, which means
+    //    multiple one-line git log
     StringBuilder commitMsg = new StringBuilder();
     commitMsg.append("Snapshot manifest from " +
         srcManifestRepo + " updated\n\n");

@@ -59,7 +59,7 @@ limitations under the License.
               <Implementation-Title>Manifest Subscription plugin
               </Implementation-Title>
               <Implementation-Vendor>AMD</Implementation-Vendor>
-              <Implementation-URL>http://www.amd.com/</Implementation-URL>
+              <Implementation-URL>https://gerrit.googlesource.com/plugins/manifest-subscription/</Implementation-URL>
 
               <Implementation-Version>${project.version}
               </Implementation-Version>

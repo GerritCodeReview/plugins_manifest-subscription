@@ -48,6 +48,15 @@ currently so it's a potential source of error.)
 * Parsed manifests are kept in memory for quick lookup
 
 
+Development Notes:
+------------------
+Entry points for this plugin are:
+ * ManifestSubscription.onGitReferenceUpdated() (for event driven activities)
+ * SshModule (for ssh commands)
+ * HttpModule (for REST/http commands)
+
+
+
 ```
 xjc -dtd -d gen -p com.amd.gerrit.plugins.manifestsubscription.manifest manifest.dtd
 ```
@@ -74,5 +83,7 @@ manifest repo
 * TODO: include an external manifest DTD or XML schema/XSD
 * TODO add test verify manifest that can cause circular conditions
 * TODO sub dir include manifest have same level include working
+
+
 
 
