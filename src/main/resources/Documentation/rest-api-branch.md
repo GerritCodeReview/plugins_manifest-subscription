@@ -79,3 +79,7 @@ Content-Type: application/json;charset=UTF-8
 SEE ALSO
 --------
 * [/tag REST endpoint](rest-api-tag.md)
+
+[Back to @PLUGIN@ documentation index][index]
+
+[index]: index.html

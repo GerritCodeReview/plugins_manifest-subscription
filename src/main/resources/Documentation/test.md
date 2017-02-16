@@ -67,3 +67,7 @@ Only this snapshot manifest should be updated:
 These snapshot manifests should be updated:
 * m/master/default.xml
 * m/master/subdir/default.xml
+
+[Back to @PLUGIN@ documentation index][index]
+
+[index]: index.html

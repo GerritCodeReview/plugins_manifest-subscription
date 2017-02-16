@@ -51,9 +51,9 @@ EXAMPLES
 --------
 Branch all projects on the server described in the `default.xml` manifest in 
 commit 5f51acb585b6a of repo `demo/build_manifest` to branch `releases/1.0.0`
+
 ```
 ssh -p @SSH_PORT@ @SSH_HOST@ @PLUGIN@ branch -r demo/build_manifest -c 5f51acb585b6a -p default.xml -b releases/1.0.0
-
 ```
 
 Branch all projects on the server described in the `default.xml` manifest in 
@@ -63,12 +63,12 @@ and create a new manifest with path `releases/1.0.0.xml` in repository
 
 ```
 ssh -p @SSH_PORT@ @SSH_HOST@ @PLUGIN@ branch -r demo/build_manifest -c v0.9-15-g5f51acb -p default.xml -b releases/1.0.0 -nr project/manifest -nb master -np releases/1.0.0.xml -cs
-
 ```
 
 In the following charts, commit 'c' is v0.9-15-g5f51acb. 
 
 With -cs:
+
 ```
  a---b---c---d---e master
           \
@@ -76,6 +76,7 @@ With -cs:
 ```
 
 Without -cs:
+
 ```
  a---b---c---d---e master
   \
@@ -85,3 +86,8 @@ Without -cs:
 SEE ALSO
 --------
 * [@PLUGIN@ tag SSH command](cmd-tag.md)
+
+[Back to @PLUGIN@ documentation index][index]
+
+[index]: index.html
+

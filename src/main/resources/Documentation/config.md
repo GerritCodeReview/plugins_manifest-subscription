@@ -9,3 +9,7 @@ In the manifest project's project.config in refs/meta/config, set the following:
 ```
 
 There should be only one value for store.  More than one value for branch.
+
+[Back to @PLUGIN@ documentation index][index]
+
+[index]: index.html

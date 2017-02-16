@@ -75,3 +75,7 @@ Content-Type: application/json;charset=UTF-8
 SEE ALSO
 --------
 * [/branch REST endpoint](rest-api-branch.md)
+
+[Back to @PLUGIN@ documentation index][index]
+
+[index]: index.html

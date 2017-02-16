@@ -35,17 +35,21 @@ OPTIONS
 EXAMPLES
 --------
 Tag all projects on the server described in the `default.xml` manifest in commit 5f51acb585b6a of repo `demo/build_manifest` to tag `releases/1.0.0`
+
 ```
 ssh -p @SSH_PORT@ @SSH_HOST@ @PLUGIN@ tag -r demo/build_manifest -c 5f51acb585b6a -p default.xml -t releases/1.0.0
-
 ```
 
 Tag all projects on the server described in the `default.xml` manifest in commit v0.9-15-g5f51acb of repo `demo/build_manifest` to tag `releases/1.0.0`
+
 ```
 ssh -p @SSH_PORT@ @SSH_HOST@ @PLUGIN@ tag -r demo/build_manifest -c v0.9-15-g5f51acb -p default.xml -t releases/1.0.0
-
 ```
 
 SEE ALSO
 --------
 * [@PLUGIN@ branch SSH command](cmd-branch.md)
+
+[Back to @PLUGIN@ documentation index][index]
+
+[index]: index.html
