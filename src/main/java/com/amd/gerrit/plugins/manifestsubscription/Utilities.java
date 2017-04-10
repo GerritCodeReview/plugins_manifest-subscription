@@ -16,7 +16,6 @@ package com.amd.gerrit.plugins.manifestsubscription;
 
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableCollection;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Maps;
 import com.google.gerrit.common.ChangeHooks;
@@ -425,5 +424,53 @@ public class Utilities {
       }
 
     }
+  }
+
+  static void triggerManifestUpdate(GitRepositoryManager gitRepositoryManager,
+                                    ManifestSubscription manifestSubscription,
+                                    String refUpdatedHash, String projectName, String projectBranch,
+                                    Writer output, boolean inJSON) {
+    PrintWriter writer;
+    if (output instanceof PrintWriter) {
+      writer = (PrintWriter) output;
+    } else {
+      writer = new PrintWriter(output);
+    }
+
+    projectBranch = projectBranch.startsWith("refs/heads/") ?
+                      projectBranch.substring(11) : projectBranch;
+
+    if (!refUpdatedHash.matches("[0-9a-fA-F]+")) {
+      writer.println("Invalid project-hash");
+      return;
+    }
+
+    ProjectBranchKey pbKey = new ProjectBranchKey(projectName, projectBranch);
+    if (!manifestSubscription.getSubscribedProjects().contains(pbKey)) {
+      writer.println(
+              String.format("Project '%s' with branch '%s' is not being monitored for manifest update",
+              projectName, projectBranch));
+      return;
+    }
+
+    try (Repository project =
+                 gitRepositoryManager.openRepository(
+                         new Project.NameKey(projectName))) {
+      ObjectId commit = project.resolve(refUpdatedHash);
+      refUpdatedHash = ObjectId.toString(commit);
+    } catch (Exception e) {
+      e.printStackTrace();
+      writer.println(e.toString());
+      writer.println(
+              String.format("Project '%s' with hash '%s' not found.",
+                      projectName, refUpdatedHash));
+      return;
+    }
+
+    manifestSubscription.processRepoChange(refUpdatedHash, projectName, pbKey);
+    writer.println("Manifest update triggered by:");
+    writer.println("  - Project: " + projectName);
+    writer.println("  - Branch: " + projectBranch);
+    writer.println("  - Updated hash: " + refUpdatedHash);
   }
 }
