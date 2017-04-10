@@ -154,58 +154,59 @@ public class ManifestSubscription implements
 
     } else if (subscribedRepos.containsRow(pbKey)) {
       //updates in subscribed repos
-
-      // Manifest store and branch
-      Map<String, Map<String, Set<
-          com.amd.gerrit.plugins.manifestsubscription.manifest.Project>>>
-          destinations = subscribedRepos.row(pbKey);
-
-      for (String store : destinations.keySet()) {
-        for (String storeBranch : destinations.get(store).keySet()) {
-          Set<com.amd.gerrit.plugins.manifestsubscription.manifest.Project> ps
-              = destinations.get(store).get(storeBranch);
-
-          Manifest manifest = manifestStores.get(store, storeBranch);
-          String manifestSrc = manifestSource.get(store, storeBranch);
-          StringBuilder extraCommitMsg = new StringBuilder();
-
-          Project.NameKey p = new Project.NameKey(projectName);
-          try (Repository r = gitRepoManager.openRepository(p);
-               RevWalk walk = new RevWalk(r)) {
-
-            RevCommit c = walk.parseCommit(
-                ObjectId.fromString(event.getNewObjectId()));
-
-            extraCommitMsg.append(event.getNewObjectId().substring(0,7));
-            extraCommitMsg.append(" ");
-            extraCommitMsg.append(projectName);
-            extraCommitMsg.append(" ");
-            extraCommitMsg.append(c.getShortMessage());
-          } catch (IOException e) {
-            e.printStackTrace();
-          }
-
-          // these are project from the above manifest previously
-          // cached in the lookup table
-          for (com.amd.gerrit.plugins.manifestsubscription.manifest.Project
-              updateProject : ps) {
-            updateProject.setRevision(event.getNewObjectId());
-          }
-
-          try {
-            Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory,
-                changeHooks, store, STORE_BRANCH_PREFIX + storeBranch,
-                manifest, manifestSrc, extraCommitMsg.toString(), null);
-          } catch (JAXBException | IOException e) {
-            e.printStackTrace();
-          }
-
-        }
-      }
-
+      processRepoChange(event.getNewObjectId(), projectName, pbKey);
     }
+  }
 
+  void processRepoChange(String refUpdatedHash, String projectName,
+                                 ProjectBranchKey pbKey) {
+    // Manifest store and branch
+    Map<String, Map<String, Set<
+            com.amd.gerrit.plugins.manifestsubscription.manifest.Project>>>
+        destinations = subscribedRepos.row(pbKey);
 
+    for (String store : destinations.keySet()) {
+      for (String storeBranch : destinations.get(store).keySet()) {
+        Set<com.amd.gerrit.plugins.manifestsubscription.manifest.Project> ps
+            = destinations.get(store).get(storeBranch);
+
+        Manifest manifest = manifestStores.get(store, storeBranch);
+        String manifestSrc = manifestSource.get(store, storeBranch);
+        StringBuilder extraCommitMsg = new StringBuilder();
+
+        Project.NameKey p = new Project.NameKey(projectName);
+        try (Repository r = gitRepoManager.openRepository(p);
+             RevWalk walk = new RevWalk(r)) {
+
+          RevCommit c = walk.parseCommit(
+              ObjectId.fromString(refUpdatedHash));
+
+          extraCommitMsg.append(refUpdatedHash.substring(0,7));
+          extraCommitMsg.append(" ");
+          extraCommitMsg.append(projectName);
+          extraCommitMsg.append(" ");
+          extraCommitMsg.append(c.getShortMessage());
+        } catch (IOException e) {
+          e.printStackTrace();
+        }
+
+        // these are project from the above manifest previously
+        // cached in the lookup table
+        for (com.amd.gerrit.plugins.manifestsubscription.manifest.Project
+            updateProject : ps) {
+          updateProject.setRevision(refUpdatedHash);
+        }
+
+        try {
+          Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory,
+              changeHooks, store, STORE_BRANCH_PREFIX + storeBranch,
+              manifest, manifestSrc, extraCommitMsg.toString(), null);
+        } catch (JAXBException | IOException e) {
+          e.printStackTrace();
+        }
+
+      }
+    }
   }
 
   private void updateProjectRev(String projectName, String branch, String rev,
