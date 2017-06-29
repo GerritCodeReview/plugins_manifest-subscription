@@ -14,22 +14,19 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
+import com.amd.gerrit.plugins.manifestsubscription.manifest.Default;
+import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
 import com.google.common.base.Throwables;
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Maps;
-import com.google.gerrit.common.ChangeHooks;
-import com.google.gerrit.reviewdb.client.Branch;
 import com.google.gerrit.reviewdb.client.Project;
+import com.google.gerrit.server.extensions.events.GitReferenceUpdated;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
 import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import com.amd.gerrit.plugins.manifestsubscription.manifest.Default;
-import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
-
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.errors.ConfigInvalidException;
 import org.eclipse.jgit.lib.ObjectId;
@@ -38,14 +35,13 @@ import org.eclipse.jgit.revwalk.RevCommit;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.xml.bind.JAXBException;
 
 public class Utilities {
   private static final Logger log =
@@ -80,7 +76,7 @@ public class Utilities {
 
   static ObjectId updateManifest(GitRepositoryManager gitRepoManager,
                              MetaDataUpdate.Server metaDataUpdateFactory,
-                             ChangeHooks changeHooks,
+                             GitReferenceUpdated gitRefUpdated,
                              String projectName, String refName,
                              Manifest manifest, String manifestSrc,
                              String extraCommitMsg,
@@ -134,10 +130,7 @@ public class Utilities {
         if (commit.getParents().length > 0) {
           parent = commit.getParent(0).getId();
         }
-        changeHooks.doRefUpdatedHook(new Branch.NameKey(p, refName),
-            parent,
-            commit.getId(), null);
-
+        gitRefUpdated.fire(p, refName, parent, commit.getId() );
       }
       return commit.getId();
     } else {
@@ -171,14 +164,14 @@ public class Utilities {
   }
 
   static Manifest createNewManifestFromBase(
-      GitRepositoryManager gitRepoManager,
-       MetaDataUpdate.Server metaDataUpdateFactory,
-       ChangeHooks changeHooks,
-       String srcManifestRepo, String srcManifestCommitish,
-       String manifestRepo, String manifestBranch, String manifestPath,
-       String newRef,
-       boolean createSnapShotBranch,
-       Manifest base)
+          GitRepositoryManager gitRepoManager,
+          MetaDataUpdate.Server metaDataUpdateFactory,
+          GitReferenceUpdated gitRefUpdated,
+          String srcManifestRepo, String srcManifestCommitish,
+          String manifestRepo, String manifestBranch, String manifestPath,
+          String newRef,
+          boolean createSnapShotBranch,
+          Manifest base)
       throws JAXBException, IOException, ConfigInvalidException, GitAPIException {
 
     // Replace default ref with newly created branch or tag
@@ -226,7 +219,7 @@ public class Utilities {
       String shortBranch = manifestBranch.replaceFirst("^refs/heads/(.*)", "$1");
 
       ObjectId oid = Utilities.updateManifest(
-          gitRepoManager, metaDataUpdateFactory, changeHooks,
+          gitRepoManager, metaDataUpdateFactory, gitRefUpdated,
           srcManifestRepo,
           ManifestSubscription.STORE_BRANCH_PREFIX + shortBranch + "/" + manifestPath,
           manifest, manifestRepo, "Manifest branched", srcManifestCommitish);
@@ -317,7 +310,7 @@ public class Utilities {
 
   static void branchManifest(GitRepositoryManager gitRepoManager,
                              MetaDataUpdate.Server metaDataUpdateFactory,
-                             ChangeHooks changeHooks,
+                             GitReferenceUpdated gitRefUpdated,
                              String manifestRepo, String manifestCommitish,
                              String manifestPath, String newBranch,
                              String newManifestRepo,
@@ -331,13 +324,13 @@ public class Utilities {
       manifest = getManifest(gitRepoManager, manifestRepo,
                               manifestCommitish, manifestPath);
       VersionedManifests.branchManifest(gitRepoManager, manifest,
-                                        newBranch, changeHooks);
+                                        newBranch, gitRefUpdated);
 
       if (newManifestBranch != null &&
           newManifestPath != null &&
           newManifestRepo != null) {
         createNewManifestFromBase(
-            gitRepoManager, metaDataUpdateFactory, changeHooks,
+            gitRepoManager, metaDataUpdateFactory, gitRefUpdated,
             manifestRepo, manifestCommitish,
             newManifestRepo, newManifestBranch, newManifestPath,
             newBranch, createSnapShotBranch, manifest);

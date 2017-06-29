@@ -14,9 +14,9 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
-import com.google.gerrit.common.ChangeHooks;
 import com.google.gerrit.common.data.GlobalCapability;
 import com.google.gerrit.extensions.annotations.RequiresCapability;
+import com.google.gerrit.server.extensions.events.GitReferenceUpdated;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
 import com.google.gerrit.sshd.CommandMetaData;
@@ -36,7 +36,7 @@ public class BranchManifestCommand extends SshCommand {
   private MetaDataUpdate.Server metaDataUpdateFactory;
 
   @Inject
-  private ChangeHooks changeHooks;
+  private GitReferenceUpdated gitRefUpdated;
 
   @Option(name = "-r", aliases = {"--manifest-repo"},
           usage = "", required = true)
@@ -90,7 +90,7 @@ public class BranchManifestCommand extends SshCommand {
     stdout.println(newManifestPath);
     stdout.println("Create snapshot branch: " + createSnapShotBranch);
 
-    Utilities.branchManifest(gitRepoManager, metaDataUpdateFactory, changeHooks,
+    Utilities.branchManifest(gitRepoManager, metaDataUpdateFactory, gitRefUpdated,
         manifestRepo, manifestCommitish, manifestPath,
         newBranch,
         newManifestRepo, newManifestBranch, newManifestPath,

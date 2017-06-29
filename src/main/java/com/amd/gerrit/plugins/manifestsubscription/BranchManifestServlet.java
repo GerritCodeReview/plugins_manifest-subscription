@@ -14,8 +14,8 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
-import com.google.gerrit.common.ChangeHooks;
 import com.google.gerrit.extensions.annotations.Export;
+import com.google.gerrit.server.extensions.events.GitReferenceUpdated;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
 import com.google.inject.Inject;
@@ -39,7 +39,7 @@ public class BranchManifestServlet extends HttpServlet {
   private MetaDataUpdate.Server metaDataUpdateFactory;
 
   @Inject
-  private ChangeHooks changeHooks;
+  private GitReferenceUpdated gitRefUpdated;
 
   protected void doPost(HttpServletRequest req, HttpServletResponse res)
                                                             throws IOException {
@@ -67,7 +67,7 @@ public class BranchManifestServlet extends HttpServlet {
       }
 
       Utilities.branchManifest(
-          gitRepoManager, metaDataUpdateFactory, changeHooks,
+          gitRepoManager, metaDataUpdateFactory, gitRefUpdated,
           input.get("manifest-repo")[0],
           input.get("manifest-commit-ish")[0],
           input.get("manifest-path")[0],

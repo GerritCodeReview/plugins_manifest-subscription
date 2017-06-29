@@ -23,6 +23,7 @@ import com.google.gerrit.extensions.annotations.PluginName;
 import com.google.gerrit.extensions.events.GitReferenceUpdatedListener;
 import com.google.gerrit.extensions.events.LifecycleListener;
 import com.google.gerrit.reviewdb.client.Project;
+import com.google.gerrit.server.extensions.events.GitReferenceUpdated;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.server.git.MetaDataUpdate;
 import com.google.gerrit.server.git.ProjectConfig;
@@ -56,7 +57,8 @@ public class ManifestSubscription implements
   private final MetaDataUpdate.Server metaDataUpdateFactory;
   private final GitRepositoryManager gitRepoManager;
   private final ProjectCache projectCache;
-  private final ChangeHooks changeHooks;
+  private final GitReferenceUpdated gitRefUpdated;
+
 
 
   /**
@@ -124,12 +126,12 @@ public class ManifestSubscription implements
                        GitRepositoryManager gitRepoManager,
                        @PluginName String pluginName,
                        ProjectCache projectCache,
-                       ChangeHooks changeHooks) {
+                       GitReferenceUpdated gitRefUpdated) {
     this.metaDataUpdateFactory = metaDataUpdateFactory;
     this.gitRepoManager = gitRepoManager;
     this.pluginName = pluginName;
     this.projectCache = projectCache;
-    this.changeHooks = changeHooks;
+    this.gitRefUpdated = gitRefUpdated;
   }
 
   @Override
@@ -199,7 +201,7 @@ public class ManifestSubscription implements
 
         try {
           Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory,
-              changeHooks, store, STORE_BRANCH_PREFIX + storeBranch,
+                  gitRefUpdated, store, STORE_BRANCH_PREFIX + storeBranch,
               manifest, manifestSrc, extraCommitMsg.toString(), null);
         } catch (JAXBException | IOException e) {
           e.printStackTrace();
@@ -465,7 +467,7 @@ public class ManifestSubscription implements
   private void updateManifest(String projectName, String refName,
                               Manifest manifest, String manifestSrc)
       throws JAXBException, IOException {
-    Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory, changeHooks,
+    Utilities.updateManifest(gitRepoManager, metaDataUpdateFactory, gitRefUpdated,
         projectName, refName, manifest, manifestSrc, "", null);
   }
 
