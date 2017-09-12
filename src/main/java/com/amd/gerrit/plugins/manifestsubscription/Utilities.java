@@ -120,16 +120,7 @@ public class Utilities {
       commit = vManifests.commitToNewRef(update, refName);
     }
 
-    // TODO this may be bug in the MetaDataUpdate or VersionedMetaData
-    // May be related:
-    // https://code.google.com/p/gerrit/issues/detail?id=2564
-    // https://gerrit-review.googlesource.com/55540
     if (commit != null) {
-      if (!commit.equals(commitId)) {
-        RefUpdate refUpdate = repo.updateRef(refName);
-        refUpdate.setNewObjectId(commit.getId());
-        gitRefUpdated.fire(p, refUpdate,null);
-      }
       return commit.getId();
     } else {
       log.warn("Failing to commit manifest subscription update:"+
