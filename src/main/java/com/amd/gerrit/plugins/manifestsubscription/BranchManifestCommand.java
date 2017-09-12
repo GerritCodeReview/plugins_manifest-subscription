@@ -22,7 +22,6 @@ import com.google.gerrit.server.git.MetaDataUpdate;
 import com.google.gerrit.sshd.CommandMetaData;
 import com.google.gerrit.sshd.SshCommand;
 import com.google.inject.Inject;
-
 import org.kohsuke.args4j.Option;
 
 @RequiresCapability(GlobalCapability.ADMINISTRATE_SERVER)

@@ -14,8 +14,6 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
-import static com.google.gerrit.reviewdb.client.RefNames.REFS_CONFIG;
-
 import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
 import com.google.common.collect.*;
 import com.google.gerrit.extensions.annotations.PluginName;
@@ -40,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.*;
+
+import static com.google.gerrit.reviewdb.client.RefNames.REFS_CONFIG;
 
 public class ManifestSubscription implements
     GitReferenceUpdatedListener, LifecycleListener {

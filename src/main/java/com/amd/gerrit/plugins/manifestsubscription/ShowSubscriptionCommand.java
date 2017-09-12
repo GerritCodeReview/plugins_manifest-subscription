@@ -19,10 +19,7 @@ import com.google.gerrit.extensions.annotations.RequiresCapability;
 import com.google.gerrit.sshd.CommandMetaData;
 import com.google.gerrit.sshd.SshCommand;
 import com.google.inject.Inject;
-
 import org.kohsuke.args4j.Option;
-
-import java.util.Set;
 
 @RequiresCapability(GlobalCapability.ADMINISTRATE_SERVER)
 @CommandMetaData(name = "show", description = "Show states of manifest-subscription")

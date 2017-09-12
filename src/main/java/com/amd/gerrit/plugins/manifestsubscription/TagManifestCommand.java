@@ -14,22 +14,13 @@
 
 package com.amd.gerrit.plugins.manifestsubscription;
 
-import com.amd.gerrit.plugins.manifestsubscription.manifest.Manifest;
 import com.google.gerrit.common.data.GlobalCapability;
 import com.google.gerrit.extensions.annotations.RequiresCapability;
-import com.google.gerrit.reviewdb.client.Project;
 import com.google.gerrit.server.git.GitRepositoryManager;
 import com.google.gerrit.sshd.CommandMetaData;
 import com.google.gerrit.sshd.SshCommand;
 import com.google.inject.Inject;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.errors.ConfigInvalidException;
-import org.eclipse.jgit.lib.ObjectId;
-import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.args4j.Option;
-
-import javax.xml.bind.JAXBException;
-import java.io.IOException;
 
 @RequiresCapability(GlobalCapability.ADMINISTRATE_SERVER)
 @CommandMetaData(name = "tag", description = "tag all projects described in a manifest on the server")
