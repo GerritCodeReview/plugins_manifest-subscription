@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.util.*;
 
 import static com.google.gerrit.reviewdb.client.RefNames.REFS_CONFIG;
+import static com.google.gerrit.reviewdb.client.RefNames.REFS_HEADS;
 
 public class ManifestSubscription implements
     GitReferenceUpdatedListener, LifecycleListener {
@@ -410,27 +411,35 @@ public class ManifestSubscription implements
 
   private void loadStoreFromProjectConfig(String projectName,
                                           ProjectConfig config)
-      throws JAXBException, IOException, ConfigInvalidException {
-    String newStore =
-        config.getPluginConfig(pluginName).getString(KEY_STORE);
+          throws JAXBException, IOException, ConfigInvalidException {
+    String newStore = config.getPluginConfig(pluginName).getString(KEY_STORE);
 
-    if (newStore != null) {
+    if (newStore != null && !newStore.isEmpty()) {
       newStore = newStore.trim();
-      if (!newStore.isEmpty()) {
-        Set<String> branches = Sets.newHashSet(
-            config.getPluginConfig(pluginName)
-                .getStringList(KEY_BRANCH));
+      Set<String> branches = Sets.newHashSet(
+              config.getPluginConfig(pluginName).getStringList(KEY_BRANCH));
 
-        if (branches.size() > 0) {
-          PluginProjectConfig ppc = new PluginProjectConfig(newStore, branches);
-
-          enabledManifestSource.put(projectName, ppc);
-          Project.NameKey nameKey = new Project.NameKey(projectName);
-          VersionedManifests versionedManifests;
-          for (String branch : branches) {
-            versionedManifests = parseManifests(nameKey, branch);
-            processManifestChange(versionedManifests, projectName, branch);
+      if (branches.size() == 0) {
+        Iterator<String> i = gitRepoManager
+                .openRepository(new Project.NameKey(projectName))
+                .getAllRefs().keySet().iterator();
+        while (i.hasNext()) {
+          String branch = i.next();
+          if (branch.startsWith(REFS_HEADS)) {
+            branches.add(branch.replace(REFS_HEADS, ""));
           }
+        }
+      }
+
+      if (branches.size() > 0) {
+        PluginProjectConfig ppc = new PluginProjectConfig(newStore, branches);
+
+        enabledManifestSource.put(projectName, ppc);
+        Project.NameKey nameKey = new Project.NameKey(projectName);
+        VersionedManifests versionedManifests;
+        for (String branch : branches) {
+          versionedManifests = parseManifests(nameKey, branch);
+          processManifestChange(versionedManifests, projectName, branch);
         }
       }
     }
