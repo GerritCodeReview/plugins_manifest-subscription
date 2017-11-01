@@ -66,7 +66,6 @@ CanonicalManifest resolve \<include\> and \<remove-project\>
 * TODO: possibly separate out manifest op into a separate plugin and make VesionedManifest as a libary (manifest-base or something)
 * TODO: generate snapshot manifest for all commit (Currently only generated on a per push/ref-updated basis)
   * Make it configurable, possibly per project, using plugin config or via special tag in manifest
-* TODO: monitor all manifest branch if no branch is specified
 * TODO: ssh command to check what is being monitored
 * TODO: strict mode, only monitor projects using default (no remote)
 * TODO: split mode (store all manifests in same branch structure as source instead of flattening the underlying file strcuture)
