@@ -61,6 +61,8 @@ public class CanonicalManifest {
       }
       // Clear remove project after all include manifest is processed
       manifest.getRemoveProject().clear();
+      
+      removeNotDefaultProject(manifest);
 
       return manifest;
     }
@@ -133,6 +135,18 @@ public class CanonicalManifest {
 
     if (removeProjects.size() > 0) {
       resolveRemoveProject(manifest, removeProjects);
+    }
+  }
+  
+  private void removeNotDefaultProject(Manifest manifest) {
+    Project p;
+    Iterator<Project> i = manifest.getProject().listIterator();
+    while (i.hasNext()) {
+      p = i.next();
+
+      if (p.getGroups() != null && p.getGroups().contains("notdefault")) {
+        i.remove();
+      }
     }
   }
 }
