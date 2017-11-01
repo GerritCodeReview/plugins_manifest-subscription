@@ -35,11 +35,13 @@ import org.eclipse.jgit.revwalk.RevWalk;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.LimitExceededException;
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.*;
 
 import static com.google.gerrit.reviewdb.client.RefNames.REFS_CONFIG;
+import static com.google.gerrit.reviewdb.client.RefNames.REFS_HEADS;
 
 public class ManifestSubscription implements
     GitReferenceUpdatedListener, LifecycleListener {
@@ -101,14 +103,15 @@ public class ManifestSubscription implements
 
   @Override
   public void start() {
+    ManifestSubscriptionConfig.readConfig();
     ProjectConfig config;
     for (Project.NameKey p : projectCache.all()) {
       //TODO parallelize parsing/load up?
       try {
         config = ProjectConfig.read(metaDataUpdateFactory.create(p));
         loadStoreFromProjectConfig(p.toString(), config);
-
-      } catch (IOException | ConfigInvalidException | JAXBException e) {
+      } catch (IOException | ConfigInvalidException |
+              JAXBException | LimitExceededException e) {
         log.error(e.toString());
         e.printStackTrace();
       }
@@ -145,6 +148,10 @@ public class ManifestSubscription implements
       // This happens when there's a branch deletion and possibly other events
       log.info("Project: " + projectName +
                "\nrefName: " + refName);
+    } else if (enabledManifestSource.containsKey(projectName) &&
+            refName.startsWith(REFS_HEADS) &&
+            event.getOldObjectId().equals(ObjectId.zeroId().name())) {
+      processManifestBranchCreated(projectName, refName);
     } else if (REFS_CONFIG.equals(refName)) {
       // possible change in enabled repos
       processProjectConfigChange(event);
@@ -401,38 +408,77 @@ public class ManifestSubscription implements
 
       if (newCfg != null) {
         loadStoreFromProjectConfig(event.getProjectName(), newCfg);
-
       }
-    } catch (IOException | ConfigInvalidException | JAXBException e) {
+    } catch (IOException | ConfigInvalidException
+            | JAXBException | LimitExceededException e) {
       e.printStackTrace();
     }
   }
 
   private void loadStoreFromProjectConfig(String projectName,
                                           ProjectConfig config)
-      throws JAXBException, IOException, ConfigInvalidException {
-    String newStore =
-        config.getPluginConfig(pluginName).getString(KEY_STORE);
+          throws JAXBException, IOException,
+          ConfigInvalidException , LimitExceededException {
+    String newStore = config.getPluginConfig(pluginName).getString(KEY_STORE);
 
-    if (newStore != null) {
+    if (newStore != null && !newStore.isEmpty()) {
       newStore = newStore.trim();
-      if (!newStore.isEmpty()) {
-        Set<String> branches = Sets.newHashSet(
-            config.getPluginConfig(pluginName)
-                .getStringList(KEY_BRANCH));
+      Set<String> branches = Sets.newHashSet(
+              config.getPluginConfig(pluginName).getStringList(KEY_BRANCH));
 
-        if (branches.size() > 0) {
-          PluginProjectConfig ppc = new PluginProjectConfig(newStore, branches);
-
-          enabledManifestSource.put(projectName, ppc);
-          Project.NameKey nameKey = new Project.NameKey(projectName);
-          VersionedManifests versionedManifests;
-          for (String branch : branches) {
-            versionedManifests = parseManifests(nameKey, branch);
-            processManifestChange(versionedManifests, projectName, branch);
+      if (branches.size() == 0) {
+        Iterator<String> i = gitRepoManager
+                .openRepository(new Project.NameKey(projectName))
+                .getAllRefs().keySet().iterator();
+        while (i.hasNext()) {
+          String branch = i.next();
+          if (branch.startsWith(REFS_HEADS)) {
+            branches.add(branch.replace(REFS_HEADS, ""));
           }
         }
       }
+
+      checkBranchesSize(branches.size());
+
+      if (branches.size() > 0) {
+        PluginProjectConfig ppc = new PluginProjectConfig(newStore, branches);
+
+        enabledManifestSource.put(projectName, ppc);
+        Project.NameKey nameKey = new Project.NameKey(projectName);
+        VersionedManifests versionedManifests;
+        for (String branch : branches) {
+          versionedManifests = parseManifests(nameKey, branch);
+          processManifestChange(versionedManifests, projectName, branch);
+        }
+      }
+    }
+  }
+
+  private void processManifestBranchCreated(String projectName, String branch) {
+    PluginProjectConfig ppc = enabledManifestSource.get(projectName);
+    Set<String> branches = ppc.getBranches();
+
+    try {
+      checkBranchesSize(branches.size() + 1);
+    } catch (Exception e) {
+      log.error(e.getMessage(), e);
+      return;
+    }
+
+    Project.NameKey nameKey = new Project.NameKey(projectName);
+    VersionedManifests versionedManifests;
+    try {
+      versionedManifests = parseManifests(nameKey, branch);
+      processManifestChange(versionedManifests, projectName, branch);
+    } catch (JAXBException | IOException | ConfigInvalidException e) {
+      log.error(e.getMessage(), e);
+    }
+  }
+
+  private void checkBranchesSize(int size) throws LimitExceededException {
+    if (size > ManifestSubscriptionConfig.getMaxBranchesPerRepo()) {
+      LimitExceededException e = new LimitExceededException("The limit of maximum number of branches allowed is exceeded");
+      throw e;
     }
   }
 

@@ -63,23 +63,22 @@ Manifest represent raw XML
 
 CanonicalManifest resolve \<include\> and \<remove-project\>
 
-* TODO: possibly separate out manifest op into a separate plugin and make VesionedManifest as a libary (manifest-base or something)
-* TODO: generate snapshot manifest for all commit (Currently only generated on a per push/ref-updated basis)
-  * Make it configurable, possibly per project, using plugin config or via special tag in manifest
-* TODO: monitor all manifest branch if no branch is specified
+* TODO: possibly separate out manifest op into a separate plugin and make
+VesionedManifest as a libary (manifest-base or something)
+* TODO: generate snapshot manifest for all commit
+(Currently only generated on a per push/ref-updated basis), make it configurable,
+possibly per project, using plugin config or via special tag in manifest
 * TODO: ssh command to check what is being monitored
 * TODO: strict mode, only monitor projects using default (no remote)
-* TODO: split mode (store all manifests in same branch structure as source instead of flattening the underlying file strcuture)
+* TODO: split mode (store all manifests in same branch structure as source
+instead of flattening the underlying file strcuture)
 * TODO: not monitor non-local projects
 * TODO: provide hook for non-local projects to trigger snapshot update
-
 * TODO: add something to prevent loop even if store repo is the same as source
 manifest repo
-
 * TODO: check project.config on newly created project
-
 * TODO: include an external manifest DTD or XML schema/XSD
-* TODO add test verify manifest that can cause circular conditions
-* TODO sub dir include manifest have same level include working
+* TODO: add test verify manifest that can cause circular conditions
+* TODO: sub dir include manifest have same level include working
 
 
