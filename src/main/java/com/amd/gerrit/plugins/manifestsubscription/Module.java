@@ -24,6 +24,7 @@ class Module extends AbstractModule {
 
   @Override
   protected void configure() {
+    requestStaticInjection(Config.class);
 
     bind(ManifestSubscription.class).in(Scopes.SINGLETON);
 

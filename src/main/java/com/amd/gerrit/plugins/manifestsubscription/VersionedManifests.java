@@ -29,7 +29,6 @@ import org.eclipse.jgit.lib.*;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.TreeWalk;
-import org.eclipse.jgit.treewalk.filter.PathSuffixFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -123,20 +122,23 @@ public class VersionedManifests extends VersionedMetaData implements ManifestPro
       RevCommit r = rw.parseCommit(getRevision());
       treewalk.addTree(r.getTree());
       treewalk.setRecursive(false);
-      treewalk.setFilter(PathSuffixFilter.create(".xml"));
+      String manifestPathPattern = Config.getManifestPathPattern() != null ?
+              Config.getManifestPathPattern() : Config.DEFAULT_MANIFEST_PATH_PATTERN;
       while (treewalk.next()) {
         if (treewalk.isSubtree()) {
           treewalk.enterSubtree();
         } else {
           path = treewalk.getPathString();
-          //TODO: Should this be done more lazily?
-          //TODO: difficult to do when reader is not available outside of onLoad?
-          try (ByteArrayInputStream input
-                   = new ByteArrayInputStream(readFile(path))) {
-            manifest = (Manifest) manifestUnmarshaller.unmarshal(input);
-            manifests.put(path, manifest);
-          } catch (JAXBException e) {
-            e.printStackTrace();
+          if (path.matches(manifestPathPattern)) {
+            //TODO: Should this be done more lazily?
+            //TODO: difficult to do when reader is not available outside of onLoad?
+            try (ByteArrayInputStream input
+                         = new ByteArrayInputStream(readFile(path))) {
+              manifest = (Manifest) manifestUnmarshaller.unmarshal(input);
+              manifests.put(path, manifest);
+            } catch (JAXBException e) {
+              e.printStackTrace();
+            }
           }
         }
       }
