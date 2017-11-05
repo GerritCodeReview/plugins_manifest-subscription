@@ -1,0 +1,21 @@
+{
+  "comments": [
+    {
+      "key": {
+        "uuid": "35a495e1_399c30c4",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestSubscription.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1021862
+      },
+      "writtenOn": "2017-11-05T19:11:33Z",
+      "side": 1,
+      "message": "Possibly detect new branch creation here or there may be another event the plugin will need to monitor.",
+      "revId": "d39aada05f1a0a7ff4c0d5e54c56195ef53f37f0",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
+    }
+  ]
+}
