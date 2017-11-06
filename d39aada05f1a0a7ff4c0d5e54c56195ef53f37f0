@@ -16,6 +16,24 @@
       "revId": "d39aada05f1a0a7ff4c0d5e54c56195ef53f37f0",
       "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
       "unresolved": false
+    },
+    {
+      "key": {
+        "uuid": "b42eb152_f1d659bd",
+        "filename": "src/main/java/com/amd/gerrit/plugins/manifestsubscription/ManifestSubscription.java",
+        "patchSetId": 8
+      },
+      "lineNbr": 144,
+      "author": {
+        "id": 1019939
+      },
+      "writtenOn": "2017-11-06T07:30:06Z",
+      "side": 1,
+      "message": "Done.",
+      "parentUuid": "35a495e1_399c30c4",
+      "revId": "d39aada05f1a0a7ff4c0d5e54c56195ef53f37f0",
+      "serverId": "173816e5-2b9a-37c3-8a2e-48639d4f1153",
+      "unresolved": false
     }
   ]
 }
