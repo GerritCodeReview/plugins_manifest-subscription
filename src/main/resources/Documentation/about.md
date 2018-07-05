@@ -2,7 +2,7 @@ This plugin allows users to monitor git-repo manifests in manifest repositories
 and generate rev-specific manifests (similar to "repo manifest -o") and store
 them to a separate git repository (configurable.)
 
-> **Warning: this plugin is currently under development and is targeting 2.14.1**
+> **Warning: this plugin is currently under development and is targeting 2.15.2**
 
 The rev-specific manifest of each source manifest is stored in its own branch
 with the following naming convention:
